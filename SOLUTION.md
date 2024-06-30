@@ -1,6 +1,6 @@
 ## ABN Technical assesment solution implementation
 
-### First impressions
+## First impressions
 
 When running the API's I've experienced an incompatibility between pytorch cpu only libraris with Apple M3 processor.
 
@@ -16,4 +16,46 @@ To run the backend API I've added two new files to be easier to manage multiple 
 
 To run locally I've used Python3.10 due some dependencies limitations.
 
-### New Backend API
+## New Backend API
+
+### EXTERNAL_INTEGRATION_KEY
+
+I've changed a small typo on the EXTERNAL_INTEGRATION_KEY - It was EXTERNAL_INTGERATION_KEY before.
+
+I've added the environment variable dependency, and also the FLESK_ENV variable dependency, to diferentiate the environment that the application is running:
+
+```python
+if __name__ == '__main__':
+    mode = os.getenv('FLASK_ENV', 'production')    
+    debug = mode == 'development'    
+    app.run(host='0.0.0.0', port=5000, debug=debug)
+
+```
+
+To run the backend_api using python3.10:
+
+- Create a python virtual environment - only 1 time needed
+```bash
+python3.10 -m venv venv
+source venv/bin/activate
+chmod +x ./build.sh
+chmod +x ./run.sh
+export FLASK_ENV=development
+export EXTERNAL_INTEGRATION_KEY=MY_INTEGRATION_KEY
+./run.sh
+
+```
+
+- Activate the environment and configure - only 1 time needed
+```bash
+source venv/bin/activate
+chmod +x ./build.sh
+chmod +x ./run.sh
+export FLASK_ENV=development
+export EXTERNAL_INTEGRATION_KEY=MY_INTEGRATION_KEY
+```
+
+- Run the Application
+```bash
+./run.sh
+```

@@ -1,8 +1,14 @@
 import time
 import random
+import os
 from flask import Flask
 
 app = Flask(__name__)
+
+external_integration_key = os.getenv("EXTERNAL_INTEGRATION_KEY")
+
+if not external_integration_key:
+    raise ValueError("EXTERNAL_INTEGRATION_KEY is not set")
 
 def generate_log():
     logs = [
@@ -23,5 +29,11 @@ def api_call():
 def health_check():
     return f"healthy"
 
+@app.route('/download_external_logs')
+def download_external_logs():
+    return f"download_external_logs works! EXTERNAL_INTEGRATION_API_KEY is set"
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    mode = os.getenv('FLASK_ENV', 'production')    
+    debug = mode == 'development'    
+    app.run(host='0.0.0.0', port=5000, debug=debug)

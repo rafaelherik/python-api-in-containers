@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: health-check-job  
+spec:
+  schedule: "*/1 * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:    
+    spec:
+      template:
+        spec:
+          containers:
+            - name: alpine
+              image: alpine:3.12
+              command: ["/bin/sh", "-c", "apk add --no-cache curl && sh /scripts/health_check.sh"] 
+              env:
+                - name: SERVICE_URL
+                  value: http://abn-app-dev-backendapi.dev.svc.cluster.local/healthz
+              volumeMounts:
+                - name: script-volume
+                  mountPath: /scripts
+                  readOnly: true
+                - name: logs-volume
+                  mountPath: /var/data/log
+          volumes:
+            - name: script-volume
+              configMap:
+                name: health-check-script
+            - name: logs-volume
+              persistentVolumeClaim:
+                claimName: logs-pvc  
+          restartPolicy: Never

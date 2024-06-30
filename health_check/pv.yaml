@@ -10,4 +10,4 @@ spec:
     - ReadWriteOnce  
   storageClassName: standard  
   hostPath:
-    path: /var/data/logs
+    path: /var/data/log

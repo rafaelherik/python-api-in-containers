@@ -1,9 +1,0 @@
-dependencies:
-- name: backendapi
-  repository: file://../backend-api
-  version: 1.0.0
-- name: dataapi
-  repository: file://../data-api
-  version: 1.0.0
-digest: sha256:5fee329e7655031bde384d83ad458954848fd39dea9ee0d7366271ec5508f7c7
-generated: "2024-06-30T16:07:12.639944+02:00"

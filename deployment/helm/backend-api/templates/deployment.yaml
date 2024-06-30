@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "backend-api.fullname" . }}
+  name: {{ include "backendapi.fullname" . }}
   labels:
-    {{- include "backend-api.labels" . | nindent 4 }}
+    {{- include "backendapi.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "backend-api.selectorLabels" . | nindent 6 }}
+      {{- include "backendapi.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,13 +18,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "backend-api.selectorLabels" . | nindent 8 }}
+        {{- include "backendapi.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "backend-api.serviceAccountName" . }}
+      serviceAccountName: {{ include "backendapi.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -35,7 +35,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: 5000
               protocol: TCP
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
@@ -44,7 +44,7 @@ spec:
           resources:        
             {{- toYaml .Values.resources | nindent 12 }}
           env:
-          - name: EXTERNAL_INTGERATION_KEY
+          - name: EXTERNAL_INTEGRATION_KEY
             valueFrom: 
                 secretKeyRef:
                     name: "{{ .Values.integrationKeySecretName}}"

@@ -12,24 +12,24 @@ To learn more about the release, try:
 1. Get the application URLs by running these commands:
 
 ### Backend API
-{{- with .Values.backendApi }}
+{{- with .Values.backendapi }}
   {{- if .ingress.enabled }}
     {{- range $host := .ingress.hosts }}
       {{- range .paths }}
-      Backend API: http{{ if $.Values.backendApi.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+      Backend API: http{{ if $.Values.backendapi.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
       {{- end }}
     {{- end }}
   {{- else if contains "NodePort" .service.type }}
-    export NODE_PORT_BACKEND=$(kubectl get --namespace {{ $.Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "backendApi.fullname" $ }})
+    export NODE_PORT_BACKEND=$(kubectl get --namespace {{ $.Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "backendapi.fullname" $ }})
     export NODE_IP=$(kubectl get nodes --namespace {{ $.Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
     echo Backend API: http://$NODE_IP:$NODE_PORT_BACKEND
   {{- else if contains "LoadBalancer" .service.type }}
      NOTE: It may take a few minutes for the LoadBalancer IP of Backend API to be available.
-           You can watch the status by running 'kubectl get --namespace {{ $.Release.Namespace }} svc -w {{ include "backendApi.fullname" $ }}'
-    export SERVICE_IP_BACKEND=$(kubectl get svc --namespace {{ $.Release.Namespace }} {{ include "backendApi.fullname" $ }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+           You can watch the status by running 'kubectl get --namespace {{ $.Release.Namespace }} svc -w {{ include "backendapi.fullname" $ }}'
+    export SERVICE_IP_BACKEND=$(kubectl get svc --namespace {{ $.Release.Namespace }} {{ include "backendapi.fullname" $ }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
     echo Backend API: http://$SERVICE_IP_BACKEND:{{ .service.port }}
   {{- else if contains "ClusterIP" .service.type }}
-    export POD_NAME_BACKEND=$(kubectl get pods --namespace {{ $.Release.Namespace }} -l "app.kubernetes.io/name=backendApi,app.kubernetes.io/instance={{ $.Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+    export POD_NAME_BACKEND=$(kubectl get pods --namespace {{ $.Release.Namespace }} -l "app.kubernetes.io/name=backendapi,app.kubernetes.io/instance={{ $.Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
     export CONTAINER_PORT_BACKEND=$(kubectl get pod --namespace {{ $.Release.Namespace }} $POD_NAME_BACKEND -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
     echo "Visit http://127.0.0.1:8001 to use the Backend API"
     kubectl --namespace {{ $.Release.Namespace }} port-forward $POD_NAME_BACKEND 8001:$CONTAINER_PORT_BACKEND
@@ -37,24 +37,24 @@ To learn more about the release, try:
 {{- end }}
 
 ### Data API
-{{- with .Values.dataApi }}
+{{- with .Values.dataapi }}
   {{- if .ingress.enabled }}
     {{- range $host := .ingress.hosts }}
       {{- range .paths }}
-      Data API: http{{ if $.Values.dataApi.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+      Data API: http{{ if $.Values.dataapi.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
       {{- end }}
     {{- end }}
   {{- else if contains "NodePort" .service.type }}
-    export NODE_PORT_DATA=$(kubectl get --namespace {{ $.Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "dataApi.fullname" $ }})
+    export NODE_PORT_DATA=$(kubectl get --namespace {{ $.Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "dataapi.fullname" $ }})
     export NODE_IP=$(kubectl get nodes --namespace {{ $.Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
     echo Data API: http://$NODE_IP:$NODE_PORT_DATA
   {{- else if contains "LoadBalancer" .service.type }}
      NOTE: It may take a few minutes for the LoadBalancer IP of Data API to be available.
-           You can watch the status by running 'kubectl get --namespace {{ $.Release.Namespace }} svc -w {{ include "dataApi.fullname" $ }}'
-    export SERVICE_IP_DATA=$(kubectl get svc --namespace {{ $.Release.Namespace }} {{ include "dataApi.fullname" $ }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+           You can watch the status by running 'kubectl get --namespace {{ $.Release.Namespace }} svc -w {{ include "dataapi.fullname" $ }}'
+    export SERVICE_IP_DATA=$(kubectl get svc --namespace {{ $.Release.Namespace }} {{ include "dataapi.fullname" $ }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
     echo Data API: http://$SERVICE_IP_DATA:{{ .service.port }}
   {{- else if contains "ClusterIP" .service.type }}
-    export POD_NAME_DATA=$(kubectl get pods --namespace {{ $.Release.Namespace }} -l "app.kubernetes.io/name=dataApi,app.kubernetes.io/instance={{ $.Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+    export POD_NAME_DATA=$(kubectl get pods --namespace {{ $.Release.Namespace }} -l "app.kubernetes.io/name=dataapi,app.kubernetes.io/instance={{ $.Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
     export CONTAINER_PORT_DATA=$(kubectl get pod --namespace {{ $.Release.Namespace }} $POD_NAME_DATA -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
     echo "Visit http://127.0.0.1:8002 to use the Data API"
     kubectl --namespace {{ $.Release.Namespace }} port-forward $POD_NAME_DATA 8002:$CONTAINER_PORT_DATA

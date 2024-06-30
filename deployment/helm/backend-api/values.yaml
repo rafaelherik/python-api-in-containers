@@ -10,7 +10,7 @@ fullnameOverride: ""
 serviceAccount:  
   create: true    
   annotations: {}
-  name: "backend-api-service-account"
+  name: "backendapi-service-account"
 podAnnotations: {}
 podSecurityContext: {}
 securityContext:
@@ -27,7 +27,7 @@ ingress:
   className: ""
   annotations: {}    
   hosts:
-    - host: backend-api.local
+    - host: backendapi.local
       paths:
         - path: /
           pathType: ImplementationSpecific

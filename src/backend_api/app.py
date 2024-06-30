@@ -26,11 +26,11 @@ def api_call():
     return f"completed: {log_message}"
 
 @app.route('/healthz')
-def health_check():
+def healthz():
     return f"healthy"
 
 @app.route('/readyz')
-def health_check():
+def readyz():
     return f"ready"
 
 @app.route('/download_external_logs')

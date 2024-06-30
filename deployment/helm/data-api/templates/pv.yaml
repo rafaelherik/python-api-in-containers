@@ -3,7 +3,7 @@ kind: PersistentVolume
 metadata:
   name: data-logs-pv
   labels:
-    {{- include "data-api.labels" . | nindent 4 }}
+    {{- include "dataapi.labels" . | nindent 4 }}
 spec:
   capacity:
     storage: {{ .Values.persistence.size }}

@@ -1,5 +1,5 @@
 apiVersion: v2
-name: data-api
+name: dataapi
 description: A Data API for ABN technical assesment
 type: application
 version: 1.0.0

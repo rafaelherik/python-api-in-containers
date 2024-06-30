@@ -19,11 +19,11 @@ def write_to_file(file_path, text):
         file.write(text + '\n')
 
 @app.route('/healthz')
-def health_check():
+def healthz():
     return f"healthy"
 
 @app.route('/readyz')
-def health_check():
+def readyz():
     return f"ready"
 
 @app.route('/')

@@ -3,7 +3,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: data-logs-pvc
   labels:
-    {{- include "data-api.labels" . | nindent 4 }}
+    {{- include "dataapi.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteOnce

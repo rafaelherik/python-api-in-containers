@@ -1,0 +1,30 @@
+backendApi:
+    integrationKeySecretName: "backend-api-integration-key"
+    service:
+        type: ClusterIP
+        port: 5000
+    livenessProbe:
+        httpGet:
+            path: /healthz
+            port: 5000
+    readinessProbe:        
+        httpGet:
+            path: /readyz
+            port: 5000
+dataApi:
+    # Mount point to /var/data/logs
+    persistence:
+        enabled: true
+        size: 1Gi
+        storageClass: standard
+    service:
+        type: ClusterIp
+        port: 5000
+    livenessProbe:
+        httpGet:
+            path: /healthz
+            port: 5000
+    readinessProbe:
+        httpGet:
+            path: /readyz
+            port: 5000

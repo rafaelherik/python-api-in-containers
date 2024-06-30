@@ -20,11 +20,11 @@ def write_to_file(file_path, text):
 
 @app.route('/healthz')
 def healthz():
-    return f"healthy"
+    return f"healthy", 200
 
 @app.route('/readyz')
 def readyz():
-    return f"ready"
+    return f"ready", 200
 
 @app.route('/')
 def process_api():

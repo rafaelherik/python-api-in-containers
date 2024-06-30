@@ -27,11 +27,11 @@ def api_call():
 
 @app.route('/healthz')
 def healthz():
-    return f"healthy"
+    return f"healthy",200
 
 @app.route('/readyz')
 def readyz():
-    return f"ready"
+    return f"ready",200
 
 @app.route('/download_external_logs')
 def download_external_logs():

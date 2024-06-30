@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: health-check-job  
+spec:
+  template:
+    spec:
+      containers:
+        - name: busybox
+          image: busybox
+          command: ["/bin/sh", "-c", "sh /scripts/health_check.sh"] 
+          env:
+            - name: SERVICE_URL
+              value: http://abn-app-dev-backend-api/healthz
+          volumeMounts:
+            - name: script-volume
+              mountPath: /scripts
+              readOnly: true
+            - name: logs-volume
+              mountPath: /var/data/logs
+      volumes:
+        - name: script-volume
+          configMap:
+            name: health-check-script
+        - name: logs-volume
+          persistentVolumeClaim:
+            claimName: logs-pvc  
+      restartPolicy: Never

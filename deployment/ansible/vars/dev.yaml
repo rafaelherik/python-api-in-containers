@@ -1,0 +1,4 @@
+environment_name: dev 
+kubeconfig_path: "~/.kube/config"
+valueFilesPath: "../../configuration/dev/values.yaml"
+k8s_context: minikube

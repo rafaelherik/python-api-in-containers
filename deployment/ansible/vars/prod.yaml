@@ -1,0 +1,4 @@
+environment_name: prod
+kubeconfig_path: "~/.kube/config"
+valueFilesPath: "../../configuration/prod.yaml"
+k8s_context: minikube

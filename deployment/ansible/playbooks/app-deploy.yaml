@@ -1,0 +1,42 @@
+---
+- name: Deploy Helm Chart
+  hosts: localhost
+  
+  tasks:    
+    - name: Include common variables
+      include_vars:
+        file: ../vars/common.yaml
+
+    - name: Include environment-specific variables
+      include_vars:
+        file: "../vars/{{ app_env | default('dev') }}.yaml"
+
+    - name: Ensure helm is installed
+      ansible.builtin.command:
+        cmd: helm version
+      register: helm_version
+      failed_when: "'Version' not in helm_version.stdout"
+
+    - name: Make sure the namespace is present in k8s cluster
+      k8s:
+        name: "{{ k8s_namespace }}"
+        kubeconfig: "{{ kubeconfig_path }}"
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: Deploy the Helm chart
+      command: >
+        helm upgrade --install
+        abn-app-{{ helm_release_suffix }}
+        {{ abn_app_chart }}
+        --namespace {{ k8s_namespace }}
+        --create-namespace
+        --values {{ valueFilesPath }}
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      register: helm_result
+
+    - name: Display Installation Helm result
+      ansible.builtin.debug:
+        var: helm_result

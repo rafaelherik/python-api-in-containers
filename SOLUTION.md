@@ -174,11 +174,11 @@ After containerize the applications I've created 3 helm charts:
  The final abn-stack value.yaml file for development environment:
 
  ``` yaml
- backendApi:
+ backendapi:
     integrationKeySecretName: "backend-api-integration-key"
     service:
         type: ClusterIP
-        port: 5000
+        port: 80        
     livenessProbe:
         httpGet:
             path: /healthz
@@ -187,15 +187,17 @@ After containerize the applications I've created 3 helm charts:
         httpGet:
             path: /readyz
             port: 5000
-dataApi:
+            initialDelaySeconds: 5
+dataapi:
     # Mount point to /var/data/logs
     persistence:
         enabled: true
         size: 1Gi
         storageClass: standard
     service:
-        type: ClusterIp
-        port: 5000
+        type: ClusterIP
+        port: 80
+        targetPort: 5000
     livenessProbe:
         httpGet:
             path: /healthz
@@ -204,7 +206,6 @@ dataApi:
         httpGet:
             path: /readyz
             port: 5000
- 
  ```
 
  For the chart creation I've used the *helm create* command, it provides a complete chart template, then changed only small necessary configuration for each application, like adding the secret reference requirement for backend-api and the volume mounts for data-api.
@@ -220,10 +221,10 @@ version: 0.1.0
 appVersion: "1.16.0"
 
 dependencies:
-  - name: backendApi
+  - name: backendapi
     version: "1.0.0"
     repository: "file://../backend-api"
-  - name: dataApi
+  - name: dataapi
     version: "1.0.0"
     repository: "file://../data-api"
  ```
@@ -291,3 +292,88 @@ helm install abn-stack-dev ./deployment/helm/abn-stack -e ./deployment/configura
 ```
 
 
+## Deploying using Ansible
+
+I've created a new playbook and variable files to support the ansible deployment.
+
+The playbook is:
+
+```yaml
+---
+- name: Deploy Helm Chart
+  hosts: localhost
+  
+  tasks:    
+    - name: Include common variables
+      include_vars:
+        file: ../vars/common.yaml
+
+    - name: Include environment-specific variables
+      include_vars:
+        file: "../vars/{{ app_env | default('dev') }}.yaml"
+
+    - name: Ensure helm is installed
+      ansible.builtin.command:
+        cmd: helm version
+      register: helm_version
+      failed_when: "'Version' not in helm_version.stdout"
+
+    - name: Make sure the namespace is present in k8s cluster
+      k8s:
+        name: "{{ k8s_namespace }}"
+        kubeconfig: "{{ kubeconfig_path }}"
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: Deploy the Helm chart
+      command: >
+        helm upgrade --install
+        abn-app-{{ helm_release_suffix }}
+        {{ abn_app_chart }}
+        --namespace {{ k8s_namespace }}
+        --create-namespace
+        --values {{ valueFilesPath }}
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      register: helm_result
+
+    - name: Display Installation Helm result
+      ansible.builtin.debug:
+        var: helm_result
+
+```
+
+
+
+The common.yaml file:
+
+```yaml
+abn_app_chart: absolutepath/abn-app
+helm_version: 3.14.0
+helm_release_suffix: "{{ environment_name }}"
+k8s_namespace: "{{ environment_name }}"
+```
+
+I'm using the environment name as suffix for the release and aldo as namespace on k8s cluster. The abn_app_chart is looking to an absolute path. In the ideal scenario it could point direcly to a git repository or a private helm repository for the team that is using this chart.
+
+
+The dev.yaml file:
+
+```yaml
+environment_name: dev 
+kubeconfig_path: "/Users/myuser/.kube/config"
+valueFilesPath: "../../configuration/dev.yaml"
+k8s_context: minikube
+```
+
+The environment name is set here, the values.yaml relative path and also the kubeconfig relative path. This value about kubernetes authentication should be stored in a secure location, like a remote vault for non development environments. In case of a remote vault the kubernetes authentication strategy could be changed.
+
+
+To deploy the helm chart using ansible run the command:
+
+```
+ansible-playbook ./deployment/ansible/playbooks/app-deploy.yaml -e app_env=dev
+```
+
+the app_env will point the playbook to the dev/prod variable files. 

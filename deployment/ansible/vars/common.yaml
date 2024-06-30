@@ -1,0 +1,4 @@
+abn_app_chart: /deployment/helm/abn-stack
+helm_version: 3.14.0
+helm_release_suffix: "{{ environment_name }}"
+k8s_namespace: "{{ environment_name }}"

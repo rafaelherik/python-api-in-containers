@@ -159,6 +159,33 @@ After updating dependencies:
 
 ## Deploying to Kubernetes
 
+PS: Here I'm not using a remote container registry. I'm loading all the images to the Cluster, then My chart is configured to never donwload the image. But in a real scenario I would push the image to the registry and configure the cluster to download from there.
+
+To load the minikube:
+
+```bash
+minikube image load <<image>>
+```
+
+on values.yaml for the stack:
+
+```yaml
+backendApi:
+  replicaCount: 1  
+  image:
+    repository: backend-api
+    pullPolicy: Never    
+    tag: "latest"
+ 
+dataApi:
+  replicaCount: 1  
+  image:
+    repository: data-api
+    pullPolicy: Never    
+    tag: "latest"  
+
+```
+
 After containerizing the applications, I created three Helm charts:
 
 - abn-stack: Combination of Data API and Backend API Helm charts.
